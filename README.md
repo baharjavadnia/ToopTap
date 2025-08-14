@@ -14,11 +14,6 @@ ToopTap — One-touch ball-juggling madness with Persian/RTL UI, unique ball phy
 
 ---
 
-## 📸 Screenshots
-*(Add your gameplay images here)*
-
----
-
 ## 🕹 How to Play
 1. Tap or drag the ball upward to keep it from falling.  
 2. Each successful upward flick scores a point.  
