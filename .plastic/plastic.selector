@@ -1,0 +1,4 @@
+repository "Roopayi_Game/Roopayi_Game@9072206625207@cloud"
+  path "/"
+    br "/main"
+    co "/main"
