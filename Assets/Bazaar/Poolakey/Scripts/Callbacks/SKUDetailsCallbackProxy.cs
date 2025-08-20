@@ -3,16 +3,12 @@ using Bazaar.Data;
 using Bazaar.Callbacks;
 using Bazaar.Poolakey.Data;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Bazaar.Poolakey.Callbacks
 {
     public class SKUDetailsCallbackProxy : CallbackProxy<List<SKUDetails>>
     {
-        public SKUDetailsCallbackProxy() : base("com.farsitel.bazaar.callback.SKUDetailsCallback")
-        {
-            taskCompletionSource = new TaskCompletionSource<Result<List<SKUDetails>>>();
-        }
+        public SKUDetailsCallbackProxy() : base("com.farsitel.bazaar.callback.SKUDetailsCallback") { }
 
         void onSuccess(AndroidJavaObject purchaseEntity)
         {
@@ -22,12 +18,12 @@ namespace Bazaar.Poolakey.Callbacks
             {
                 list.Add(new SKUDetails(purchaseEntity.Call<AndroidJavaObject>("get", index)));
             }
-            taskCompletionSource.SetResult(new Result<List<SKUDetails>>(Status.Success, "Fetch SKU details completed.") { data = list });
+            result = new Result<List<SKUDetails>>(Status.Success, "Fetch SKU details completed.") { data = list };
         }
 
         void onFailure(string message, string stackTrace)
         {
-            taskCompletionSource.SetResult(new Result<List<SKUDetails>>(Status.Failure, message, stackTrace));
+            result = new Result<List<SKUDetails>>(Status.Failure, message, stackTrace);
         }
     }
 }

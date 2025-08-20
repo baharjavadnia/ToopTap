@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using RTLTMPro;
 using Bazaar.Poolakey.Data; // Result<T>, PurchaseInfo
 using Bazaar.Data;          // Status
+using System.Threading.Tasks;
 
 public class PurchasePanel : MonoBehaviour
 {
@@ -15,7 +16,7 @@ public class PurchasePanel : MonoBehaviour
     public Button         purchaseMoneyButton;
     public RTLTextMeshPro purchaseMoneyButtonText;
     public Button         cancelButton;
-    public RTLTextMeshPro toastText; // optional
+    public RTLTextMeshPro toastText;
 
     private StoreItemData currentItem;
     private StoreManager  storeManager;
@@ -45,7 +46,7 @@ public class PurchasePanel : MonoBehaviour
 
     public void OpenForItem(StoreItemData item, StoreManager mgr)
     {
-        UnsubscribeFromStore();
+        Unsubscribe();
         currentItem  = item;
         storeManager = mgr;
 
@@ -68,7 +69,7 @@ public class PurchasePanel : MonoBehaviour
     public void Close()
     {
         SetActive(false);
-        UnsubscribeFromStore();
+        Unsubscribe();
     }
 
     void SetActive(bool v)
@@ -105,7 +106,7 @@ public class PurchasePanel : MonoBehaviour
         }
     }
 
-    // خرید با امتیاز
+    // خرید با امتیاز (لوکال)
     void OnBuyScoreClicked()
     {
         if (currentItem == null || storeManager == null) return;
@@ -126,9 +127,12 @@ public class PurchasePanel : MonoBehaviour
         }
     }
 
-    // خرید ریالی — فقط اندروید دیوایس (نه Editor)
+    // خرید ریالی — فقط روی دستگاه اندرویدی (نه Editor)
     async void OnBuyMoneyClicked()
     {
+        // برای حذف هشدار CS1998 در مسیرهای کامپایل شرطی
+        await Task.Yield();
+
         if (currentItem == null || storeManager == null)
         {
             AudioManager.Instance?.PlayTap();
@@ -163,7 +167,7 @@ public class PurchasePanel : MonoBehaviour
 
             if (result.status == Status.Success)
             {
-                // آیتم‌ها غیرمصرفی هستند → Consume نمی‌کنیم
+                // آیتم‌ها غیرمصرفی‌اند → Consume نمی‌کنیم
                 storeManager.MarkPurchased(currentItem.itemID);
                 StoreUIController.Instance?.RefreshCard();
                 AudioManager.Instance?.PlayCoin();
@@ -195,8 +199,8 @@ public class PurchasePanel : MonoBehaviour
         }
     }
 
-    void OnDestroy() => UnsubscribeFromStore();
-    void UnsubscribeFromStore()
+    void OnDestroy() => Unsubscribe();
+    void Unsubscribe()
     {
         if (subscribedToStore && storeManager != null)
             storeManager.OnPurchased -= HandlePurchasedAndClose;
